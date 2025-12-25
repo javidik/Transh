@@ -316,10 +316,25 @@ main {
     overflow-x: auto;
 }
 
+/* Information icons */
+.info-icon {
+    cursor: help;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-left: 4px;
+    border-bottom: 1px dotted;
+    text-decoration: none;
+}
+
+.info-icon:hover {
+    color: var(--primary-color);
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    font-size: 0.9rem;
 }
 
 th, td {
@@ -332,6 +347,7 @@ th {
     background-color: #f1f5f9;
     font-weight: 600;
     color: var(--text-primary);
+    position: relative;
 }
 
 tr:hover {
