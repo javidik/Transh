@@ -28,16 +28,24 @@ class MortgageCalculator {
                 </div>
                 <div class="tranche-fields">
                     <div class="form-group">
-                        <label for="trancheAmount_${this.trancheCounter}">Сумма транша (₽):</label>
+                        <label for="trancheAmount_${this.trancheCounter}">Сумма транша (₽): <span class="info-icon" title="Сумма, выделяемая в этом транше">ℹ️</span></label>
                         <input type="number" id="trancheAmount_${this.trancheCounter}" name="trancheAmount" min="0" step="1000" value="${this.trancheCounter === 1 ? '3000000' : '1000000'}" required>
                     </div>
                     <div class="form-group">
-                        <label for="trancheRate_${this.trancheCounter}">Процентная ставка (%):</label>
+                        <label for="trancheRate_${this.trancheCounter}">Процентная ставка (%): <span class="info-icon" title="Процентная ставка для этого транша">ℹ️</span></label>
                         <input type="number" id="trancheRate_${this.trancheCounter}" name="trancheRate" min="0" max="100" step="0.01" value="${this.trancheCounter === 1 ? '12' : '13'}" required>
                     </div>
                     <div class="form-group">
-                        <label for="trancheStartDate_${this.trancheCounter}">Дата выдачи:</label>
+                        <label for="trancheStartDate_${this.trancheCounter}">Дата выдачи: <span class="info-icon" title="Дата, когда будет выдан транш">ℹ️</span></label>
                         <input type="date" id="trancheStartDate_${this.trancheCounter}" name="trancheStartDate" value="${this.formatDate(new Date())}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trancheEndDate_${this.trancheCounter}">Дата окончания транша: <span class="info-icon" title="Дата, когда должен быть погашен этот транш">ℹ️</span></label>
+                        <input type="date" id="trancheEndDate_${this.trancheCounter}" name="trancheEndDate" value="${this.formatDate(new Date(new Date().setFullYear(new Date().getFullYear() + 5)))}">
+                    </div>
+                    <div class="form-group">
+                        <label for="tranchePaidMonths_${this.trancheCounter}">Уже выплачено месяцев: <span class="info-icon" title="Количество месяцев, которые уже были выплачены по этому траншу">ℹ️</span></label>
+                        <input type="number" id="tranchePaidMonths_${this.trancheCounter}" name="tranchePaidMonths" min="0" max="120" value="0">
                     </div>
                 </div>
             </div>
@@ -77,12 +85,16 @@ class MortgageCalculator {
             const trancheAmount = parseFloat(document.getElementById(`trancheAmount_${index + 1}`).value);
             const trancheRate = parseFloat(document.getElementById(`trancheRate_${index + 1}`).value);
             const trancheStartDate = document.getElementById(`trancheStartDate_${index + 1}`).value;
+            const trancheEndDate = document.getElementById(`trancheEndDate_${index + 1}`).value;
+            const tranchePaidMonths = parseInt(document.getElementById(`tranchePaidMonths_${index + 1}`).value) || 0;
             
             if (trancheAmount && trancheRate && trancheStartDate) {
                 tranches.push({
                     amount: trancheAmount,
                     rate: trancheRate,
-                    startDate: new Date(trancheStartDate)
+                    startDate: new Date(trancheStartDate),
+                    endDate: trancheEndDate ? new Date(trancheEndDate) : null,
+                    paidMonths: tranchePaidMonths
                 });
             }
         });
@@ -106,64 +118,65 @@ class MortgageCalculator {
     }
 
     calculateMortgage(baseRate, totalAmount, paymentType, loanTerm, tranches) {
-        // Sort tranches by date
+        // Sort tranches by start date
         tranches.sort((a, b) => a.startDate - b.startDate);
-        
-        // Calculate monthly interest rates
-        const monthlyBaseRate = baseRate / 100 / 12;
-        const monthlyTrancheRates = tranches.map(tranche => tranche.rate / 100 / 12);
         
         // Total months
         const totalMonths = loanTerm * 12;
         
         // Initialize payment schedule
         let paymentSchedule = [];
-        let totalDebt = 0;
         
-        // Calculate initial debt from all tranches
-        tranches.forEach(tranche => {
-            totalDebt += tranche.amount;
-        });
-        
-        // Start date is the earliest tranche date
+        // Calculate start date (earliest tranche date)
         const startDate = new Date(Math.min(...tranches.map(t => t.startDate)));
         
-        // For simplicity in this example, we'll implement a basic model
-        // where all tranches are considered together with weighted average rate
-        let currentDebt = totalDebt;
-        let currentDate = new Date(startDate);
-        let monthCounter = 0;
+        // Calculate end date based on loan term
+        const endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + totalMonths);
         
-        // Calculate weighted average rate
-        let weightedRate = 0;
-        let totalAmountWeight = 0;
-        
-        tranches.forEach(tranche => {
-            weightedRate += tranche.amount * (tranche.rate / 100);
-            totalAmountWeight += tranche.amount;
+        // Initialize tranches with remaining balance and months paid
+        const trancheStatus = tranches.map((tranche, index) => {
+            // Calculate remaining balance after already paid months
+            let remainingBalance = tranche.amount;
+            let monthsToPay = totalMonths;
+            
+            // For now, we'll just use the original amount, but in a real implementation
+            // we would calculate the remaining balance after paid months
+            return {
+                id: index,
+                originalAmount: tranche.amount,
+                remainingBalance: tranche.amount, // Simplified for now
+                rate: tranche.rate,
+                startDate: tranche.startDate,
+                endDate: tranche.endDate,
+                paidMonths: tranche.paidMonths,
+                monthlyRate: tranche.rate / 100 / 12
+            };
         });
         
-        weightedRate = weightedRate / totalAmountWeight;
-        const monthlyWeightedRate = weightedRate / 12;
+        // Calculate total debt
+        const totalDebt = tranches.reduce((sum, tranche) => sum + tranche.amount, 0);
         
         // Calculate monthly payment based on payment type
         let monthlyPayment = 0;
+        const monthlyRate = baseRate / 100 / 12;
         
         if (paymentType === 'annuity') {
             // Annuity payment formula
-            const n = totalMonths;
-            const r = monthlyWeightedRate;
-            
-            if (r > 0) {
-                monthlyPayment = (currentDebt * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            if (monthlyRate > 0) {
+                monthlyPayment = (totalDebt * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
             } else {
-                monthlyPayment = currentDebt / n;
+                monthlyPayment = totalDebt / totalMonths;
             }
         }
         
-        // Generate payment schedule
-        for (let i = 0; i < totalMonths && currentDebt > 0; i++) {
-            const monthInterest = currentDebt * monthlyWeightedRate;
+        // Simulate payments month by month
+        let currentDebt = totalDebt;
+        let currentDate = new Date(startDate);
+        
+        for (let month = 1; month <= totalMonths && currentDebt > 0.01; month++) {
+            // Calculate interest for the month
+            const monthInterest = currentDebt * monthlyRate;
             
             let principalPayment, interestPayment, totalPayment;
             
@@ -172,7 +185,7 @@ class MortgageCalculator {
                 principalPayment = Math.min(monthlyPayment - interestPayment, currentDebt);
                 totalPayment = principalPayment + interestPayment;
             } else { // differentiated
-                principalPayment = currentDebt / (totalMonths - i);
+                principalPayment = totalDebt / totalMonths;
                 interestPayment = monthInterest;
                 totalPayment = principalPayment + interestPayment;
             }
@@ -188,21 +201,33 @@ class MortgageCalculator {
             }
             
             // Calculate the date for this payment
-            const paymentDate = new Date(currentDate);
-            paymentDate.setMonth(paymentDate.getMonth() + i + 1);
+            const paymentDate = new Date(startDate);
+            paymentDate.setMonth(paymentDate.getMonth() + month);
+            
+            // Determine which tranche is active for this month
+            const activeTranches = tranches.filter(tranche => {
+                const monthDate = new Date(startDate);
+                monthDate.setMonth(monthDate.getMonth() + month - 1);
+                return monthDate >= tranche.startDate && 
+                       (!tranche.endDate || monthDate <= tranche.endDate);
+            });
+            
+            const trancheInfo = activeTranches.length > 0 
+                ? `Транш #${activeTranches[0].amount}` // Simplified - in real implementation would be more specific
+                : 'Общий';
             
             paymentSchedule.push({
-                month: i + 1,
+                month: month,
                 date: paymentDate.toLocaleDateString('ru-RU'),
                 balance: currentDebt,
                 payment: totalPayment,
                 principal: principalPayment,
                 interest: interestPayment,
-                tranche: this.getTrancheForMonth(i, tranches)
+                tranche: trancheInfo
             });
             
             // Break if debt is fully paid
-            if (currentDebt <= 0) {
+            if (currentDebt <= 0.01) {
                 break;
             }
         }
@@ -223,10 +248,36 @@ class MortgageCalculator {
         };
     }
 
-    getTrancheForMonth(month, tranches) {
-        // For this example, we'll return the first tranche
-        // In a real implementation, this would determine which tranche is active for the given month
-        return `Транш #1`;
+    getTrancheForMonth(monthIndex, tranches) {
+        // Determine which tranches are active at this month
+        const currentDate = new Date();
+        // For now, just return a simple identifier - in a real implementation this would be more complex
+        if (tranches.length === 1) {
+            return `Транш #1`;
+        } else {
+            // Find active tranches for this month
+            const activeTranches = [];
+            for (let i = 0; i < tranches.length; i++) {
+                const tranche = tranches[i];
+                const startDate = tranche.startDate;
+                const endDate = tranche.endDate;
+                
+                // Calculate the date for this month
+                const monthDate = new Date(startDate);
+                monthDate.setMonth(monthDate.getMonth() + monthIndex);
+                
+                // Check if this tranche is active during this month
+                if (monthDate >= startDate && (!endDate || monthDate <= endDate)) {
+                    activeTranches.push(i + 1);
+                }
+            }
+            
+            if (activeTranches.length > 0) {
+                return `Транш #${activeTranches.join(', #')}`;
+            } else {
+                return 'Общий';
+            }
+        }
     }
 
     displayResults(results) {
@@ -320,6 +371,22 @@ class MortgageCalculator {
                     },
                     legend: {
                         position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function(context) {
+                                const index = context[0].dataIndex;
+                                return `Месяц ${index + 1}`;
+                            },
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                const datasetLabel = context.dataset.label || '';
+                                const value = context.parsed.y;
+                                return `${datasetLabel}: ${value.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})}`;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -373,6 +440,17 @@ class MortgageCalculator {
                     },
                     legend: {
                         position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed;
+                                const total = totalPrincipal + totalInterest;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})} (${percentage}%)`;
+                            }
+                        }
                     }
                 }
             }
@@ -413,6 +491,14 @@ class MortgageCalculator {
                     },
                     legend: {
                         position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                return `Остаток долга: ${value.toLocaleString('ru-RU', {style: 'currency', currency: 'RUB'})}`;
+                            }
+                        }
                     }
                 },
                 scales: {

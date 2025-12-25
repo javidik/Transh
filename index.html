@@ -20,17 +20,17 @@
                 <form id="mortgageForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="baseRate">Базовая процентная ставка (%):</label>
+                            <label for="baseRate">Базовая процентная ставка (%): <span class="info-icon" title="Базовая процентная ставка, применяемая к ипотеке">ℹ️</span></label>
                             <input type="number" id="baseRate" min="0" max="100" step="0.01" value="12" required>
                         </div>
                         <div class="form-group">
-                            <label for="totalAmount">Общая сумма кредита (₽):</label>
+                            <label for="totalAmount">Общая сумма кредита (₽): <span class="info-icon" title="Общая сумма кредита, которую вы планируете получить">ℹ️</span></label>
                             <input type="number" id="totalAmount" min="0" step="1000" value="5000000" required>
                         </div>
                     </div>
 
                     <div class="tranches-container">
-                        <h3>Транши</h3>
+                        <h3>Транши <span class="info-icon" title="Транши - это части кредита, выдаваемые по отдельности в разные сроки">ℹ️</span></h3>
                         <div id="tranchesList">
                             <!-- Tranches will be added here dynamically -->
                         </div>
@@ -39,14 +39,14 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="paymentType">Тип платежа:</label>
+                            <label for="paymentType">Тип платежа: <span class="info-icon" title="Аннуитетный - равные ежемесячные платежи; Дифференцированный - уменьшающиеся платежи">ℹ️</span></label>
                             <select id="paymentType" required>
                                 <option value="annuity">Аннуитетный</option>
                                 <option value="differentiated">Дифференцированный</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="loanTerm">Срок кредита (лет):</label>
+                            <label for="loanTerm">Срок кредита (лет): <span class="info-icon" title="Срок, на который берётся кредит">ℹ️</span></label>
                             <input type="number" id="loanTerm" min="1" max="30" value="20" required>
                         </div>
                     </div>
