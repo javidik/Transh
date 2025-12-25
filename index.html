@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Tranche Calculator | Калькулятор траншевой ипотеки</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Калькулятор траншевой ипотеки</h1>
+            <p>Рассчитайте ипотеку с неограниченным количеством траншей</p>
+        </header>
+
+        <main>
+            <section class="calculator-section">
+                <h2>Параметры ипотеки</h2>
+                <form id="mortgageForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="baseRate">Базовая процентная ставка (%):</label>
+                            <input type="number" id="baseRate" min="0" max="100" step="0.01" value="12" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="totalAmount">Общая сумма кредита (₽):</label>
+                            <input type="number" id="totalAmount" min="0" step="1000" value="5000000" required>
+                        </div>
+                    </div>
+
+                    <div class="tranches-container">
+                        <h3>Транши</h3>
+                        <div id="tranchesList">
+                            <!-- Tranches will be added here dynamically -->
+                        </div>
+                        <button type="button" id="addTranche" class="btn-secondary">+ Добавить транш</button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentType">Тип платежа:</label>
+                            <select id="paymentType" required>
+                                <option value="annuity">Аннуитетный</option>
+                                <option value="differentiated">Дифференцированный</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="loanTerm">Срок кредита (лет):</label>
+                            <input type="number" id="loanTerm" min="1" max="30" value="20" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Рассчитать ипотеку</button>
+                </form>
+            </section>
+
+            <section class="dashboard-section" id="dashboard" style="display: none;">
+                <div class="dashboard-header">
+                    <h2>Дашборд ипотеки</h2>
+                    <button id="resetCalculator" class="btn-secondary">Новый расчет</button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Общая информация</h3>
+                        <div class="summary-info">
+                            <div class="summary-item">
+                                <span>Общая сумма кредита:</span>
+                                <span id="totalCreditAmount">0 ₽</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Общая сумма выплат:</span>
+                                <span id="totalPaymentAmount">0 ₽</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Переплата по кредиту:</span>
+                                <span id="overpaymentAmount">0 ₽</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Эффективная ставка:</span>
+                                <span id="effectiveRate">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>График выплат</h3>
+                        <canvas id="paymentChart"></canvas>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>Структура выплат</h3>
+                        <canvas id="structureChart"></canvas>
+                    </div>
+
+                    <div class="dashboard-card full-width">
+                        <h3>График остатка долга</h3>
+                        <canvas id="balanceChart"></canvas>
+                    </div>
+
+                    <div class="dashboard-card full-width">
+                        <h3>Детализация платежей</h3>
+                        <div class="table-container">
+                            <table id="paymentTable">
+                                <thead>
+                                    <tr>
+                                        <th>Месяц</th>
+                                        <th>Дата</th>
+                                        <th>Остаток долга</th>
+                                        <th>Платеж</th>
+                                        <th>Основной долг</th>
+                                        <th>Проценты</th>
+                                        <th>Транш</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Payment details will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Калькулятор траншевой ипотеки. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
