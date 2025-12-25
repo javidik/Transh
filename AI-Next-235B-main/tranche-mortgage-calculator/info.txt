@@ -1,0 +1,6 @@
+Tranche Mortgage Calculator - Professional mortgage calculator with visualizations
+Deployable on GitHub Pages
+Files:
+- index.html: Main calculator page
+- style.css: Stylesheet
+- README.md: Documentation
