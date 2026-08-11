@@ -15,37 +15,46 @@ class MortgageCalculator {
         document.getElementById('resetCalculator').addEventListener('click', () => this.resetCalculator());
     }
 
-    addTranche() {
+    addTranche(existingData = null) {
         const tranchesList = document.getElementById('tranchesList');
         this.trancheCounter++;
         
         const trancheId = `tranche_${this.trancheCounter}`;
+        const amount = existingData?.amount || (this.trancheCounter === 1 ? '3000000' : '1000000');
+        const rate = existingData?.rate || (this.trancheCounter === 1 ? '12' : '13');
+        const startDate = existingData?.startDate || this.formatDate(new Date());
+        const endDate = existingData?.endDate || this.formatDate(new Date(new Date().setFullYear(new Date().getFullYear() + 5)));
+        const paidMonths = existingData?.paidMonths || '0';
+        
         const trancheHtml = `
             <div class="tranche-item" data-tranche-id="${trancheId}">
                 <div class="tranche-item-header">
-                    <div class="tranche-item-title">Транш #${this.trancheCounter}</div>
-                    <button type="button" class="remove-tranche" onclick="calculator.removeTranche('${trancheId}')">×</button>
+                    <div class="tranche-item-title">
+                        <span class="tranche-number">${this.trancheCounter}</span>
+                        Транш #${this.trancheCounter}
+                    </div>
+                    <button type="button" class="remove-tranche" onclick="calculator.removeTranche('${trancheId}')" title="Удалить транш">×</button>
                 </div>
                 <div class="tranche-fields">
-                    <div class="form-group">
-                        <label for="trancheAmount_${this.trancheCounter}">Сумма транша (₽): <span class="info-icon" title="Сумма, выделяемая в этом транше">ℹ️</span></label>
-                        <input type="number" id="trancheAmount_${this.trancheCounter}" name="trancheAmount" min="0" step="1000" value="${this.trancheCounter === 1 ? '3000000' : '1000000'}" required>
+                    <div class="tranche-field">
+                        <label for="trancheAmount_${this.trancheCounter}">Сумма (₽)</label>
+                        <input type="number" id="trancheAmount_${this.trancheCounter}" name="trancheAmount" min="0" step="100000" value="${amount}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="trancheRate_${this.trancheCounter}">Процентная ставка (%): <span class="info-icon" title="Процентная ставка для этого транша">ℹ️</span></label>
-                        <input type="number" id="trancheRate_${this.trancheCounter}" name="trancheRate" min="0" max="100" step="0.01" value="${this.trancheCounter === 1 ? '12' : '13'}" required>
+                    <div class="tranche-field">
+                        <label for="trancheRate_${this.trancheCounter}">Ставка (%)</label>
+                        <input type="number" id="trancheRate_${this.trancheCounter}" name="trancheRate" min="0" max="100" step="0.01" value="${rate}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="trancheStartDate_${this.trancheCounter}">Дата выдачи: <span class="info-icon" title="Дата, когда будет выдан транш">ℹ️</span></label>
-                        <input type="date" id="trancheStartDate_${this.trancheCounter}" name="trancheStartDate" value="${this.formatDate(new Date())}" required>
+                    <div class="tranche-field">
+                        <label for="trancheStartDate_${this.trancheCounter}">Дата выдачи</label>
+                        <input type="date" id="trancheStartDate_${this.trancheCounter}" name="trancheStartDate" value="${startDate}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="trancheEndDate_${this.trancheCounter}">Дата окончания транша: <span class="info-icon" title="Дата, когда должен быть погашен этот транш">ℹ️</span></label>
-                        <input type="date" id="trancheEndDate_${this.trancheCounter}" name="trancheEndDate" value="${this.formatDate(new Date(new Date().setFullYear(new Date().getFullYear() + 5)))}">
+                    <div class="tranche-field">
+                        <label for="trancheEndDate_${this.trancheCounter}">Дата окончания</label>
+                        <input type="date" id="trancheEndDate_${this.trancheCounter}" name="trancheEndDate" value="${endDate}">
                     </div>
-                    <div class="form-group">
-                        <label for="tranchePaidMonths_${this.trancheCounter}">Уже выплачено месяцев: <span class="info-icon" title="Количество месяцев, которые уже были выплачены по этому траншу">ℹ️</span></label>
-                        <input type="number" id="tranchePaidMonths_${this.trancheCounter}" name="tranchePaidMonths" min="0" max="120" value="0">
+                    <div class="tranche-field">
+                        <label for="tranchePaidMonths_${this.trancheCounter}">Выплачено месяцев</label>
+                        <input type="number" id="tranchePaidMonths_${this.trancheCounter}" name="tranchePaidMonths" min="0" max="360" value="${paidMonths}">
                     </div>
                 </div>
             </div>

@@ -3,115 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mortgage Tranche Calculator | Калькулятор траншевой ипотеки</title>
+    <title>Калькулятор траншевой ипотеки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Калькулятор траншевой ипотеки</h1>
-            <p>Рассчитайте ипотеку с неограниченным количеством траншей</p>
+    <div class="wrapper">
+        <header class="site-header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="#2563eb"/>
+                        <path d="M16 6L8 12V20L16 26L24 20V12L16 6Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M16 11V21" stroke="white" stroke-width="2"/>
+                        <path d="M12 15L16 18L20 15" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Ипотека.Транши</span>
+                </div>
+                <nav class="header-nav">
+                    <a href="#" class="nav-link active">Калькулятор</a>
+                </nav>
+            </div>
         </header>
 
-        <main>
-            <section class="calculator-section">
-                <h2>Параметры ипотеки</h2>
-                <form id="mortgageForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="baseRate">Базовая процентная ставка (%): <span class="info-icon" title="Базовая процентная ставка, применяемая к ипотеке">ℹ️</span></label>
-                            <input type="number" id="baseRate" min="0" max="100" step="0.01" value="12" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="totalAmount">Общая сумма кредита (₽): <span class="info-icon" title="Общая сумма кредита, которую вы планируете получить">ℹ️</span></label>
-                            <input type="number" id="totalAmount" min="0" step="1000" value="5000000" required>
-                        </div>
+        <main class="main-content">
+            <div class="content-container">
+                <section class="calculator-panel">
+                    <div class="panel-header">
+                        <h1>Расчёт траншевой ипотеки</h1>
+                        <p class="subtitle">Профессиональный инструмент для расчёта сложных ипотечных программ с несколькими траншами</p>
                     </div>
 
-                    <div class="tranches-container">
-                        <h3>Транши <span class="info-icon" title="Транши - это части кредита, выдаваемые по отдельности в разные сроки">ℹ️</span></h3>
-                        <div id="tranchesList">
-                            <!-- Tranches will be added here dynamically -->
-                        </div>
-                        <button type="button" id="addTranche" class="btn-secondary">+ Добавить транш</button>
-                    </div>
+                    <form id="mortgageForm" class="calc-form">
+                        <div class="form-section">
+                            <h2 class="section-title">
+                                <span class="title-icon">📊</span>
+                                Основные параметры
+                            </h2>
+                            
+                            <div class="form-grid">
+                                <div class="form-field">
+                                    <label for="totalAmount" class="field-label">
+                                        Общая сумма кредита
+                                        <span class="tooltip-trigger" data-tooltip="Сумма всех траншей, которые вы планируете получить">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1" fill="none"/>
+                                                <text x="8" y="11" text-anchor="middle" font-size="8" font-weight="bold">?</text>
+                                            </svg>
+                                        </span>
+                                    </label>
+                                    <div class="input-with-prefix">
+                                        <span class="prefix">₽</span>
+                                        <input type="number" id="totalAmount" min="0" step="100000" value="5000000" required>
+                                    </div>
+                                </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="paymentType">Тип платежа: <span class="info-icon" title="Аннуитетный - равные ежемесячные платежи; Дифференцированный - уменьшающиеся платежи">ℹ️</span></label>
-                            <select id="paymentType" required>
-                                <option value="annuity">Аннуитетный</option>
-                                <option value="differentiated">Дифференцированный</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="loanTerm">Срок кредита (лет): <span class="info-icon" title="Срок, на который берётся кредит">ℹ️</span></label>
-                            <input type="number" id="loanTerm" min="1" max="30" value="20" required>
-                        </div>
-                    </div>
+                                <div class="form-field">
+                                    <label for="loanTerm" class="field-label">
+                                        Срок кредита
+                                        <span class="tooltip-trigger" data-tooltip="Общий срок погашения ипотеки в годах">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1" fill="none"/>
+                                                <text x="8" y="11" text-anchor="middle" font-size="8" font-weight="bold">?</text>
+                                            </svg>
+                                        </span>
+                                    </label>
+                                    <div class="input-with-suffix">
+                                        <input type="number" id="loanTerm" min="1" max="30" value="20" required>
+                                        <span class="suffix">лет</span>
+                                    </div>
+                                </div>
 
-                    <button type="submit" class="btn-primary">Рассчитать ипотеку</button>
-                </form>
-            </section>
+                                <div class="form-field">
+                                    <label for="baseRate" class="field-label">
+                                        Базовая ставка
+                                        <span class="tooltip-trigger" data-tooltip="Базовая процентная ставка по ипотеке">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1" fill="none"/>
+                                                <text x="8" y="11" text-anchor="middle" font-size="8" font-weight="bold">?</text>
+                                            </svg>
+                                        </span>
+                                    </label>
+                                    <div class="input-with-suffix">
+                                        <input type="number" id="baseRate" min="0" max="100" step="0.01" value="12" required>
+                                        <span class="suffix">%</span>
+                                    </div>
+                                </div>
 
-            <section class="dashboard-section" id="dashboard" style="display: none;">
-                <div class="dashboard-header">
-                    <h2>Дашборд ипотеки</h2>
-                    <button id="resetCalculator" class="btn-secondary">Новый расчет</button>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <h3>Общая информация</h3>
-                        <div class="summary-info">
-                            <div class="summary-item">
-                                <span>Общая сумма кредита:</span>
-                                <span id="totalCreditAmount">0 ₽</span>
+                                <div class="form-field">
+                                    <label for="paymentType" class="field-label">
+                                        Тип платежей
+                                        <span class="tooltip-trigger" data-tooltip="Аннуитетные — равные платежи каждый месяц. Дифференцированные — платежи уменьшаются со временем">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1" fill="none"/>
+                                                <text x="8" y="11" text-anchor="middle" font-size="8" font-weight="bold">?</text>
+                                            </svg>
+                                        </span>
+                                    </label>
+                                    <select id="paymentType" class="select-input">
+                                        <option value="annuity">Аннуитетные</option>
+                                        <option value="differentiated">Дифференцированные</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="summary-item">
-                                <span>Общая сумма выплат:</span>
-                                <span id="totalPaymentAmount">0 ₽</span>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <span class="title-icon">💰</span>
+                                    Транши
+                                </h2>
+                                <span class="section-hint">Каждый транш может иметь свою дату выдачи и ставку</span>
                             </div>
-                            <div class="summary-item">
-                                <span>Переплата по кредиту:</span>
-                                <span id="overpaymentAmount">0 ₽</span>
+                            
+                            <div id="tranchesList" class="tranches-list">
+                                <!-- Tranches will be added here dynamically -->
                             </div>
-                            <div class="summary-item">
-                                <span>Эффективная ставка:</span>
-                                <span id="effectiveRate">0%</span>
+                            
+                            <button type="button" id="addTranche" class="btn-add-tranche">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 4a1 1 0 011 1v4h4a1 1 0 110 2h-4v4a1 1 0 11-2 0v-4H5a1 1 0 110-2h4V5a1 1 0 011-1z"/>
+                                </svg>
+                                Добавить транш
+                            </button>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-calculate">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9V9h2v4zm0-6H9V5h2v2z"/>
+                                </svg>
+                                Рассчитать
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="results-panel" id="dashboard" style="display: none;">
+                    <div class="results-header">
+                        <div>
+                            <h1>Результаты расчёта</h1>
+                            <p class="subtitle">Детальная информация по вашей ипотечной программе</p>
+                        </div>
+                        <button id="resetCalculator" class="btn-reset">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                                <path d="M15.3 6.3a6.3 6.3 0 10-1.8 1.8l1.1 1.1a1 1 0 001.4-1.4l-1.1-1.1zM9 14a5 5 0 110-10 5 5 0 010 10z"/>
+                            </svg>
+                            Новый расчёт
+                        </button>
+                    </div>
+
+                    <div class="summary-cards">
+                        <div class="summary-card highlight">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                                </svg>
+                            </div>
+                            <div class="card-content">
+                                <span class="card-label">Сумма кредита</span>
+                                <span class="card-value" id="totalCreditAmount">0 ₽</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12z"/>
+                                </svg>
+                            </div>
+                            <div class="card-content">
+                                <span class="card-label">Общая выплата</span>
+                                <span class="card-value" id="totalPaymentAmount">0 ₽</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                                </svg>
+                            </div>
+                            <div class="card-content">
+                                <span class="card-label">Переплата</span>
+                                <span class="card-value" id="overpaymentAmount">0 ₽</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                                </svg>
+                            </div>
+                            <div class="card-content">
+                                <span class="card-label">Эффективная ставка</span>
+                                <span class="card-value" id="effectiveRate">0%</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <h3>График выплат</h3>
-                        <canvas id="paymentChart"></canvas>
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Динамика платежей</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="paymentChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Структура выплат</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="structureChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card chart-full-width">
+                            <div class="chart-header">
+                                <h3>Остаток задолженности</h3>
+                            </div>
+                            <div class="chart-container chart-large">
+                                <canvas id="balanceChart"></canvas>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <h3>Структура выплат</h3>
-                        <canvas id="structureChart"></canvas>
-                    </div>
-
-                    <div class="dashboard-card full-width">
-                        <h3>График остатка долга</h3>
-                        <canvas id="balanceChart"></canvas>
-                    </div>
-
-                    <div class="dashboard-card full-width">
-                        <h3>Детализация платежей</h3>
-                        <div class="table-container">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3>График платежей</h3>
+                            <div class="table-actions">
+                                <button class="btn-export" id="exportCSV">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 0a1 1 0 011 1v9.586l2.293-2.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L7 10.586V1a1 1 0 011-1z"/>
+                                        <path d="M0 12a1 1 0 011-1h14a1 1 0 011 1v3a1 1 0 01-1 1H1a1 1 0 01-1-1v-3z"/>
+                                    </svg>
+                                    Экспорт CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
                             <table id="paymentTable">
                                 <thead>
                                     <tr>
-                                        <th>Месяц</th>
-                                        <th>Дата</th>
-                                        <th>Остаток долга</th>
-                                        <th>Платеж</th>
+                                        <th>№</th>
+                                        <th>Дата платежа</th>
+                                        <th>Активные транши</th>
+                                        <th>Платёж</th>
                                         <th>Основной долг</th>
                                         <th>Проценты</th>
-                                        <th>Транш</th>
+                                        <th>Остаток</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,12 +268,14 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
 
-        <footer>
-            <p>&copy; 2025 Калькулятор траншевой ипотеки. Все права защищены.</p>
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Ипотека.Транши. Профессиональный калькулятор для расчёта сложных ипотечных программ.</p>
+            </div>
         </footer>
     </div>
 
